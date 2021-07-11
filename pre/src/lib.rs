@@ -1,3 +1,4 @@
+mod bidijkstra;
 mod constants;
 mod contraction;
 mod dijkstra;
@@ -59,5 +60,21 @@ pub fn build_ch(mut nodes: Vec<Node>, mut edges: Vec<Way>) -> Output {
         up_offset,
         down_index,
         down_offset,
+    }
+}
+
+impl Output {
+    pub fn query(&self, start: NodeId, end: NodeId) -> Option<(Vec<NodeId>, f32)> {
+        // TODO Cache this per thread
+        let mut dijkstra = bidijkstra::BiDijkstra::new(self.nodes.len());
+        dijkstra.find_path(
+            start,
+            end,
+            &self.nodes,
+            &self.edges,
+            &self.up_offset,
+            &self.down_offset,
+            &self.down_index,
+        )
     }
 }

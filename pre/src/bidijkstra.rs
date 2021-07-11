@@ -4,7 +4,7 @@ use std::collections::BinaryHeap;
 use visited_list::*;
 
 #[derive(Clone)]
-pub struct Dijkstra {
+pub struct BiDijkstra {
     dist_up: Vec<(Weight, Option<EdgeId>)>,
     dist_down: Vec<(Weight, Option<EdgeId>)>,
     visited_up: VisitedList,
@@ -13,10 +13,10 @@ pub struct Dijkstra {
     heap_down: BinaryHeap<MinHeapItem>,
 }
 
-impl Dijkstra {
+impl BiDijkstra {
     /// general constructor
     pub fn new(amount_nodes: usize) -> Self {
-        Dijkstra {
+        BiDijkstra {
             dist_up: vec![(std::usize::MAX, None); amount_nodes],
             dist_down: vec![(std::usize::MAX, None); amount_nodes],
             visited_up: VisitedList::new(amount_nodes),
