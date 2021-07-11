@@ -37,14 +37,14 @@ impl BiDijkstra {
         up_offset: &[EdgeId],
         down_offset: &[EdgeId],
         down_index: &[EdgeId],
-    ) -> Option<(Vec<NodeId>, f32)> {
+    ) -> Option<(Weight, Vec<NodeId>)> {
         self.heap_up.clear();
         self.heap_down.clear();
         self.visited_up.unvisit_all();
         self.visited_down.unvisit_all();
 
         if start == end {
-            return Some((vec![], 0.0));
+            return Some((0, vec![]));
         }
 
         self.dist_up[start] = (0, None);
@@ -156,7 +156,7 @@ impl BiDijkstra {
         weight: Weight,
         meeting_rank: Rank,
         edges: &[Way],
-    ) -> (Vec<NodeId>, f32) {
+    ) -> (Weight, Vec<NodeId>) {
         assert!(self.visited_up.is_visited(meeting_node));
         assert!(self.visited_down.is_visited(meeting_node));
 
@@ -174,7 +174,7 @@ impl BiDijkstra {
             self.walk_down(down_edge.1.unwrap(), false, &mut path, &edges);
         }
 
-        (path, weight as f32 / DIST_MULTIPLICATOR as f32)
+        (weight, path)
     }
 
     // walk shortcuts from meeting point to end

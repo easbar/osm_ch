@@ -9,7 +9,6 @@ pub struct Way {
     pub source: NodeId,
     pub target: NodeId,
     pub weight: usize,
-    #[serde(skip_serializing)]
     pub id: Option<EdgeId>,
     pub contrated_previous: Option<EdgeId>,
     pub contrated_next: Option<EdgeId>,

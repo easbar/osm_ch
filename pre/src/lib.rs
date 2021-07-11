@@ -64,7 +64,7 @@ pub fn build_ch(mut nodes: Vec<Node>, mut edges: Vec<Way>) -> Output {
 }
 
 impl Output {
-    pub fn query(&self, start: NodeId, end: NodeId) -> Option<(Vec<NodeId>, f32)> {
+    pub fn query(&self, start: NodeId, end: NodeId) -> Option<(Weight, Vec<NodeId>)> {
         // TODO Cache this per thread
         let mut dijkstra = bidijkstra::BiDijkstra::new(self.nodes.len());
         dijkstra.find_path(
