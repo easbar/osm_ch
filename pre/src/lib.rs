@@ -74,15 +74,15 @@ impl Calculator {
         }
     }
 
-    pub fn query(&mut self, start: NodeId, end: NodeId) -> Option<(Weight, Vec<NodeId>)> {
+    pub fn query(&mut self, output: &Output, start: NodeId, end: NodeId) -> Option<(Weight, Vec<NodeId>)> {
         self.dijkstra.find_path(
             start,
             end,
-            &self.nodes,
-            &self.edges,
-            &self.up_offset,
-            &self.down_offset,
-            &self.down_index,
+            &output.nodes,
+            &output.edges,
+            &output.up_offset,
+            &output.down_offset,
+            &output.down_index,
         )
     }
 }
