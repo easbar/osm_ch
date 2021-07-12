@@ -1,3 +1,15 @@
+use std::collections::{BTreeMap, BTreeSet};
+use std::sync::atomic::{AtomicIsize, AtomicUsize, Ordering};
+use std::sync::RwLock;
+use std::time::Instant;
+
+use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
+
+pub use crate::constants::*;
+pub use crate::structs::*;
+use crate::visited_list::*;
+
 mod bidijkstra;
 mod constants;
 mod contraction;
@@ -9,25 +21,17 @@ mod ordering;
 mod structs;
 mod visited_list;
 
-use rayon::prelude::*;
-use serde::{Deserialize, Serialize};
-
-use std::collections::{BTreeMap, BTreeSet};
-use std::sync::atomic::{AtomicIsize, AtomicUsize, Ordering};
-use std::sync::RwLock;
-use std::time::Instant;
-
-pub use crate::constants::*;
-pub use crate::structs::*;
-use crate::visited_list::*;
-
 #[derive(Serialize, Deserialize)]
 pub struct Output {
-    nodes: Vec<Node>,
-    edges: Vec<Way>,
-    up_offset: Vec<EdgeId>,
-    down_offset: Vec<EdgeId>,
-    down_index: Vec<EdgeId>,
+    pub nodes: Vec<Node>,
+    pub edges: Vec<Way>,
+    pub up_offset: Vec<EdgeId>,
+    pub down_offset: Vec<EdgeId>,
+    pub down_index: Vec<EdgeId>,
+}
+
+pub struct Calculator {
+    dijkstra: bidijkstra::BiDijkstra,
 }
 
 pub fn build_ch(mut nodes: Vec<Node>, mut edges: Vec<Way>) -> Output {
@@ -63,11 +67,15 @@ pub fn build_ch(mut nodes: Vec<Node>, mut edges: Vec<Way>) -> Output {
     }
 }
 
-impl Output {
-    pub fn query(&self, start: NodeId, end: NodeId) -> Option<(Weight, Vec<NodeId>)> {
-        // TODO Cache this per thread
-        let mut dijkstra = bidijkstra::BiDijkstra::new(self.nodes.len());
-        dijkstra.find_path(
+impl Calculator {
+    pub fn new(nodes: usize) -> Self {
+        Calculator {
+            dijkstra: bidijkstra::BiDijkstra::new(nodes),
+        }
+    }
+
+    pub fn query(&mut self, start: NodeId, end: NodeId) -> Option<(Weight, Vec<NodeId>)> {
+        self.dijkstra.find_path(
             start,
             end,
             &self.nodes,
